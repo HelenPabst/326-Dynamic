@@ -25,6 +25,20 @@ int main()
 
 	mbt table;
 
+	//PCB
+	struct pcb
+	{
+		int pid[10];
+		int pageTable;
+	};
+
+	pcb PCB;
+
+	int ptrPT;
+
+	//ready queue
+	queue<pcb> ready;
+
 	//set all elements equal to "true" to represent empty space
 	for (int i = 0; i < 128; i++)
 	{
@@ -52,6 +66,9 @@ int main()
 	int PIDarr[10] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 	int locPID = 0;
 
+	int pageTable[118];
+	int ptCounter=0;
+
 	//create menu
 	bool menu = true;
 	while (menu)
@@ -63,14 +80,16 @@ int main()
 		//1. Initiate a process
 		if (response == 1)
 		{
-			//allocate dynamic memory for a process control block (this is the queue, FIFO)
-			queue<int> PCB;			
+			//allocate dynamic memory for a process control block
+			/*queue<int> PCB;	*/		
 
-			//obtain a unique process ID(PID) and save it in the PCB (store this in the queue)
-			int PID = PIDarr[locPID];
-			locPID++;
-			PCB.push(PID);
-			cout << "PID: " << PCB.front()<<"\n";
+			//obtain a unique process ID(PID) and save it in the PCB
+			int PID = PIDarr[locPID]; //get PID from PID array
+			PCB.pid[locPID] = PID; //store PID in PCB (struct)
+			locPID++; //increment PID array
+
+			/*PCB.push(PID);
+			cout << "PID: " << PCB.front()<<"\n";*/
 
 			//generate a random number for required memory blocks
 			int num = rand() % 100 + 1; //num in the range 1 to 100
@@ -86,27 +105,44 @@ int main()
 
 			else
 			{
-				//make a pointer ptr for bool arr
+				//allocate memory blocks (only a simulation by designating required number of blocks in MBT as "allocated")
+				for (int k = (128-table.space); k < (128-table.space)+num; k++)
+				{
+					table.arr[k] = false;
+				}
 
+				//allocate dynamic memory for a page table and store allocated blocks in it
+				for (int j=0; j < num; j++)
+				{
+					pageTable[ptCounter] = ptCounter+10;
+					ptCounter++;
+				}
+
+				//save the pointer to page table in PCB
+				ptrPT = (128 - table.space) + num;
+				PCB.pageTable = ptrPT;
+
+				//Insert PCB in ready queue
+				ready.push(PCB);
+
+				//output page table and MBT to enable varification, and return to menu
+				cout << "Page Table:" << endl;
+				for (int l = 0; l < 118; l++)
+				{
+					cout << pageTable[l] << endl;
+				}
+
+				cout << "MBT:" << endl;
 				table.space -= num;
 				cout << "Blocks left after allocation: " << table.space<<"\n";
-			}
-
-			//allocate memory blocks (only a simulation by designating required number of blocks in MBT as "allocated")
-
-			//allocate dynamic memory for a page table and store allocated blocks in it
-
-			//save the pointer to page table in PCB
-
-			//Insert PCB in ready queue
-
-			//output page table and MBT to enable varification, and return to menu
+			}			
 		}
 
 		//2. Print all processes in ready queue
 		if (response == 2)
 		{
 			//output PID for each process in ready queue and return to menu (print the queue)
+			cout << ready.front().pid[1];
 		}
 
 		//3. Terminate process with a specific PID
