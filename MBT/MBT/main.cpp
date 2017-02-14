@@ -9,6 +9,11 @@
 #include <queue>        // std::queue
 using namespace std;
 
+void printPCB()
+{
+
+}
+
 int main()
 {
 	/* initialize random seed: */
@@ -38,6 +43,7 @@ int main()
 
 	//ready queue
 	queue<pcb> ready;
+	queue<pcb> printReady;
 
 	//set all elements equal to "true" to represent empty space
 	for (int i = 0; i < 128; i++)
@@ -124,12 +130,13 @@ int main()
 
 				//Insert PCB in ready queue
 				ready.push(PCB);
+				printReady.push(PCB);
 
 				//output page table and MBT to enable varification, and return to menu
 				cout << "Page Table:" << endl;
 				for (int l = 0; l < 118; l++)
 				{
-					cout << pageTable[l] << endl;
+					cout <<" "<< pageTable[l] <<" ";
 				}
 
 				cout << "MBT:" << endl;
@@ -142,7 +149,17 @@ int main()
 		if (response == 2)
 		{
 			//output PID for each process in ready queue and return to menu (print the queue)
-			cout << ready.front().pid[1];
+			/*for (int h = 0; h < 10; h++)
+			{
+				cout << PCB.pid[h] << endl;
+				//cout << ready.front().pid[h] << endl;
+			}*/
+
+			while (!printReady.empty())
+			{
+				cout << printReady.front() << " ";
+				printReady.pop();
+			}
 		}
 
 		//3. Terminate process with a specific PID
